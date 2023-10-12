@@ -5,7 +5,7 @@ defineDefaultConfig({
 })
 
 onBeforeRequest(config => {
-    const headers = new Headers()
-    headers.append('token', 'test-token')
-    config.headers = headers
+    config.headers = {
+        token: 'test-token'
+    }
 })
