@@ -12,7 +12,7 @@ import { oasisEndUtilsPresets } from '@oasis-end/utils/dist/preset'
 export default defineConfig({
     base: './',
     server: {
-        port: 5000
+        port: 3888
     },
     resolve: {
         alias: [
