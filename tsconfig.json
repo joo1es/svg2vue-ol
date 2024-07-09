@@ -27,7 +27,8 @@
                 "src/*"
             ]
         },
-        "jsxImportSource": "vue"
+        "jsxImportSource": "vue",
+        "allowSyntheticDefaultImports": true
     },
     "include": [
         "src/**/*.ts",

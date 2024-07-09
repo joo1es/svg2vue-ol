@@ -6,6 +6,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import { requestAutoImport } from '@oasis-end/request'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import path from 'path'
+import { oasisEndUtilsPresets } from '@oasis-end/utils/dist/preset'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -33,6 +34,7 @@ export default defineConfig({
                 'vue-router',
                 'pinia',
                 requestAutoImport,
+                oasisEndUtilsPresets,
                 {
                     'naive-ui': [
                       'useDialog',

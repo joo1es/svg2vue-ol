@@ -11,17 +11,19 @@
     "type": "module",
     "dependencies": {
         "@oasis-end/request": "^1.0.18",
+        "@oasis-end/utils": "^1.0.3",
         "@vueuse/core": "^10.9.0",
         "naive-ui": "^2.38.1",
         "pinia": "^2.1.7",
         "reset-css": "^5.0.2",
-        "vue": "^3.4.25",
-        "vue-router": "^4.3.2"
+        "vue": "^3.4.31",
+        "vue-router": "^4.4.0"
     },
     "devDependencies": {
         "@types/node": "^20.8.4",
         "@typescript-eslint/eslint-plugin": "^7.7.1",
         "@typescript-eslint/parser": "^7.7.1",
+        "@vitejs/plugin-legacy": "^5.3.0",
         "@vitejs/plugin-vue": "^5.0.4",
         "@vitejs/plugin-vue-jsx": "^3.1.0",
         "eslint": "^8.57.0",
@@ -32,7 +34,6 @@
         "unplugin-auto-import": "^0.17.5",
         "unplugin-vue-components": "^0.26.0",
         "vite": "^5.2.10",
-        "@vitejs/plugin-legacy": "^5.3.0",
         "vue-tsc": "^2.0.14"
     }
 }
