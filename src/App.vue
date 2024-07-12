@@ -12,71 +12,71 @@ const typescript = useLocalStorage('typescript', 1)
 const currentColor = useLocalStorage('currentColor', 1)
 
 const checked = computed({
-     get() {
-          return (files.value.length > 0 && files.value.length === selected.value.size) ? 1 : 0
-     },
-     set(value) {
-          if (value) {
-               selected.value.clear()
-               files.value.forEach(file => selected.value.add(file.key))
-          } else {
-               selected.value.clear()
-          }
-     }
+    get() {
+        return (files.value.length > 0 && files.value.length === selected.value.size) ? 1 : 0
+    },
+    set(value) {
+        if (value) {
+            selected.value.clear()
+            files.value.forEach(file => selected.value.add(file.key))
+        } else {
+            selected.value.clear()
+        }
+    }
 })
 
 function remove(keys: Set<symbol> | symbol[]) {
-     for (const key of keys) {
-          files.value = files.value.filter(file => keys instanceof Set ? !keys.has(file.key) : !keys.includes(file.key))
-          selected.value.delete(key)
-     }
+    for (const key of keys) {
+        files.value = files.value.filter(file => keys instanceof Set ? !keys.has(file.key) : !keys.includes(file.key))
+        selected.value.delete(key)
+    }
 }
 
 const loading = ref(false)
 async function download() {
-     loading.value = true
-     try {
-          const targetFiles = selected.value.size === 0 ? files.value : files.value.filter(file => selected.value.has(file.key))
-          const archive = new JSZip()
-          const names: Map<string, number> = new Map()
-          const promises: Promise<void>[] = []
-          const indexContent: string[] = []
-          for (const file of targetFiles) {
-               promises.push(new Promise<void>((resolve, reject) => {
-                    const nameMap = file.name || 'Icon'
-                    if (names.get(nameMap) === void 0) {
-                        names.set(nameMap, 0)
-                    } else {
-                        names.set(nameMap, (names.get(nameMap) || 0) + 1)
-                    }
-                    const fileReader = new FileReader()
-                    fileReader.readAsText(file.file, 'utf-8')
-                    fileReader.onloadend = function(evt) {
-                         // 在文件读取完毕后，其内容将被保存在result属性中
-                         const content = evt.target?.result
-                         if (typeof content === 'string') {
-                              const targetName = getTargetName(nameMap)
-                              indexContent.push(`export { default as ${targetName} } from './${targetName}.vue'`)
-                              archive.file(`${targetName}.vue`, getTemplate(content, currentColor.value, typescript.value))
-                         }
-                         resolve()
-                    }
-                    fileReader.onabort = reject
-                    fileReader.onerror = reject
-               }))
-          }
-          await Promise.all(promises)
-          archive.file(`index.${typescript.value ? 'ts' : 'js'}`, indexContent.join('\n'))
-          const content = await archive.generateAsync({ type:'blob' })
-          const link = document.createElement('a')
-          link.href = URL.createObjectURL(content)
-          link.download = 'Icons.zip'
-          link.click()
-          link.remove()
-          URL.revokeObjectURL(link.href)
-     } finally {
-          loading.value = false
-     }
+    loading.value = true
+    try {
+        const targetFiles = selected.value.size === 0 ? files.value : files.value.filter(file => selected.value.has(file.key))
+        const archive = new JSZip()
+        const names: Map<string, number> = new Map()
+        const promises: Promise<void>[] = []
+        const indexContent: string[] = []
+        for (const file of targetFiles) {
+            promises.push(new Promise<void>((resolve, reject) => {
+                const nameMap = file.name || 'Icon'
+                if (names.get(nameMap) === void 0) {
+                    names.set(nameMap, 0)
+                } else {
+                    names.set(nameMap, (names.get(nameMap) || 0) + 1)
+                }
+                const fileReader = new FileReader()
+                fileReader.readAsText(file.file, 'utf-8')
+                fileReader.onloadend = function(evt) {
+                        // 在文件读取完毕后，其内容将被保存在result属性中
+                        const content = evt.target?.result
+                        if (typeof content === 'string') {
+                            const targetName = getTargetName(nameMap)
+                            indexContent.push(`export { default as ${targetName} } from './${targetName}.vue'`)
+                            archive.file(`${targetName}.vue`, getTemplate(content, currentColor.value, typescript.value))
+                        }
+                        resolve()
+                }
+                fileReader.onabort = reject
+                fileReader.onerror = reject
+            }))
+        }
+        await Promise.all(promises)
+        archive.file(`index.${typescript.value ? 'ts' : 'js'}`, indexContent.join('\n'))
+        const content = await archive.generateAsync({ type:'blob' })
+        const link = document.createElement('a')
+        link.href = URL.createObjectURL(content)
+        link.download = 'Icons.zip'
+        link.click()
+        link.remove()
+        URL.revokeObjectURL(link.href)
+    } finally {
+        loading.value = false
+    }
 }
 </script>
 
