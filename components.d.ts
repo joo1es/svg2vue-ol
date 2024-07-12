@@ -7,9 +7,23 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    CeShiZhongWen: typeof import('./src/components/Icons (7)/CeShiZhongWen.vue')['default']
+    CloudArrowDownSvgrepoCom: typeof import('./src/components/Icons (7)/CloudArrowDownSvgrepoCom.vue')['default']
+    CloudSvgrepoCom: typeof import('./src/components/Icons (7)/CloudSvgrepoCom.vue')['default']
+    CloudSvgrepoComFuBen: typeof import('./src/components/Icons (7)/CloudSvgrepoComFuBen.vue')['default']
+    Download: typeof import('./src/components/Icons/Download.vue')['default']
+    DownloadMinimalisticSvgrepoCom: typeof import('./src/components/Icons (7)/DownloadMinimalisticSvgrepoCom.vue')['default']
+    FileRemoveSvgrepoCom: typeof import('./src/components/Icons (7)/FileRemoveSvgrepoCom.vue')['default']
     Logo: typeof import('./src/components/Logo.vue')['default']
+    NButton: typeof import('naive-ui')['NButton']
+    NCheckbox: typeof import('naive-ui')['NCheckbox']
+    NIcon: typeof import('naive-ui')['NIcon']
+    NSpace: typeof import('naive-ui')['NSpace']
+    Remove: typeof import('./src/components/Icons/Remove.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SvgList: typeof import('./src/components/SvgList/index.vue')['default']
+    Upload: typeof import('./src/components/Icons/Upload.vue')['default']
+    UploadMinimalisticSvgrepoCom: typeof import('./src/components/Icons (7)/UploadMinimalisticSvgrepoCom.vue')['default']
   }
 }

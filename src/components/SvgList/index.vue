@@ -1,10 +1,11 @@
 <script setup lang="ts">
-const files = defineModel<{
-    file: File,
-    src: string,
-    name: string,
-    key: symbol
-}[]>()
+import { getTargetName } from '@/utils/getTargetName'
+import { FileModel } from '@/types'
+
+defineEmits(['remove'])
+
+const selected = defineModel<Set<symbol>>('selected', { required: true })
+const files = defineModel<FileModel[]>({ required: true })
 const fileRef = ref<HTMLInputElement>()
 
 function handleFilePick() {
@@ -13,7 +14,6 @@ function handleFilePick() {
 
 function handleChange(e: Event) {
     const target = e.currentTarget as HTMLInputElement
-    console.log(target.files)
     if (!target.files) return
     for (const file of target.files) {
         pushFile(file)
@@ -21,10 +21,16 @@ function handleChange(e: Event) {
     target.value = ''
 }
 
+function clearSelected() {
+    selected.value.clear()
+}
+
 document.addEventListener('paste', handlePaste)
+document.addEventListener('click', clearSelected)
 
 onUnmounted(() => {
     document.removeEventListener('paste', handlePaste)
+    document.removeEventListener('click', clearSelected)
 })
 
 function pushFile(file: File) {
@@ -34,7 +40,7 @@ function pushFile(file: File) {
         const targetFile = {
             file,
             src: reader.result,
-            name: file.name,
+            name: file.name.split('.')[0],
             key: Symbol()
         }
         files.value?.push(targetFile)
@@ -61,10 +67,52 @@ function addItems(items?: DataTransferItemList | null) {
     }
 }
 
-function handleSvgItemClick(e: MouseEvent) {
-    const target = e.currentTarget as HTMLDivElement
-    target.querySelector('input')?.focus()
+function handleSvgItemClick(e: MouseEvent, file: FileModel) {
+    // const target = e.currentTarget as HTMLDivElement
+    // target.querySelector('input')?.focus()
+    if (e.ctrlKey) {
+        if (selected.value.has(file.key)) {
+            selected.value.delete(file.key)
+        } else {
+            selected.value.add(file.key)
+        }
+    } else if (e.shiftKey) {
+        const firstSelected = [...selected.value][0]
+        let startIndex = -1
+        if (firstSelected) {
+            startIndex = files.value.findIndex(f => f.key === firstSelected)
+        }
+        const currentIndex = files.value.findIndex(f => f.key === file.key)
+        const start = Math.min(startIndex, currentIndex)
+        const max = Math.abs(startIndex - currentIndex)
+        for (let i = start; i <= max; i ++) {
+            if (files.value[i]) {
+                selected.value.add(files.value[i].key)
+            }
+        }
+    } else {
+        selected.value.clear()
+        selected.value.add(file.key)
+    }
 }
+
+const filesWithName = computed(() => {
+    const names: Map<string, number> = new Map()
+    return files.value?.map(file => {
+        const nameMap = file.name || 'Icon'
+        if (names.get(nameMap) === void 0) {
+            names.set(nameMap, 0)
+        } else {
+            names.set(nameMap, (names.get(nameMap) || 0) + 1)
+        }
+        const targetName = getTargetName(nameMap, names.get(nameMap))
+        return {
+            ...file,
+            targetName,
+            selected: selected.value.has(file.key)
+        }
+    }) || []
+})
 </script>
 
 <template>
@@ -74,31 +122,27 @@ function handleSvgItemClick(e: MouseEvent) {
             @drop.prevent="handleFileDrop"
             @dragenter.prevent
             @dragover.prevent
+            @click="handleFilePick"
             key="upload"
         >
-            <div class="svg-item-upload" @click="handleFilePick">
-                Upload
+            <div class="svg-item-upload">
+                <NIcon><Upload /></NIcon>
                 <input @input="handleChange" ref="fileRef" type="file" multiple accept=".svg" />
             </div>
         </div>
         <div
-            class="svg-item svg-item--upload"
-            v-if="files && files.length > 0"
-            key="download"
-        >
-            <div class="svg-item-upload">
-                Download
-            </div>
-        </div>
-        <div
             class="svg-item"
-            v-for="(file, index) in files"
+            :class="{ selected: file.selected }"
+            v-for="(file, index) in filesWithName"
             :key="file.key"
-            @click.middle.stop="files?.splice(index, 1)"
-            @click="handleSvgItemClick"
+            @click.middle.stop="$emit('remove', [file.key])"
+            @click.stop="handleSvgItemClick($event, file)"
         >
-            <img :src="file.src" />
-            <input v-model="file.name" />
+            <span :title="file.targetName">{{ file.targetName }}.vue</span>
+            <div class="svg-item-img">
+                <img :src="file.src" />
+            </div>
+            <input v-model="files[index].name" @click.stop />
         </div>
     </TransitionGroup>
 </template>
@@ -111,6 +155,7 @@ function handleSvgItemClick(e: MouseEvent) {
     --gap: 20px;
     --row-items: 5;
     padding-right: var(--gap);
+    user-select: none;
     .svg-item {
         background-color: #f5f5f5;
         border-radius: 10px;
@@ -128,17 +173,34 @@ function handleSvgItemClick(e: MouseEvent) {
         margin-left: var(--gap);
         margin-bottom: var(--gap);
         vertical-align: middle;
+        > span {
+            font-size: 12px;
+            text-align: center;
+            color: #aaa;
+            font-family: Fira Code;
+            line-height: 1.5;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            margin-bottom: 5px;
+        }
         &:hover,
-        &:has(:focus) {
+        &.selected {
             border-color: #40ab7f;
             .svg-item-upload {
                 color: #40ab7f;
             }
         }
-        > img {
+        .svg-item-img {
             flex: 1;
             min-height: 0;
-            object-fit: contain;
+            display: flex;
+            align-items: center;
+            > img {
+                height: 64px;
+                object-fit: contain;
+            }
         }
         input {
             width: 100%;
@@ -150,20 +212,21 @@ function handleSvgItemClick(e: MouseEvent) {
             font-size: 14px;
             transition: .2s;
             margin-top: 10px;
+            font-family: Fira Code;
             &:focus {
                 border-color: #40ab7f;
             }
         }
         &.svg-item--upload {
             border-style: dashed;
+            cursor: pointer;
         }
     }
     .svg-item-upload {
         color: #ccc;
         font-family: Impact;
-        font-size: 36px;
+        font-size: 64px;
         box-sizing: border-box;
-        cursor: pointer;
         transition: .2s;
         letter-spacing: -1px;
         input {
