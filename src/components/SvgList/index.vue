@@ -78,13 +78,13 @@ function handleSvgItemClick(e: MouseEvent, file: FileModel) {
         }
     } else if (e.shiftKey) {
         const firstSelected = [...selected.value][0]
-        let startIndex = -1
+        let startIndex = 0
         if (firstSelected) {
             startIndex = files.value.findIndex(f => f.key === firstSelected)
         }
         const currentIndex = files.value.findIndex(f => f.key === file.key)
         const start = Math.min(startIndex, currentIndex)
-        const max = Math.abs(startIndex - currentIndex)
+        const max = Math.max(startIndex, currentIndex)
         for (let i = start; i <= max; i++) {
             if (files.value[i]) {
                 selected.value.add(files.value[i].key)
