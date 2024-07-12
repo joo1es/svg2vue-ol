@@ -16,6 +16,7 @@ declare module 'vue' {
     Remove: typeof import('./src/components/Icons/Remove.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Sort: typeof import('./src/components/Icons/Sort.vue')['default']
     SvgList: typeof import('./src/components/SvgList/index.vue')['default']
     Upload: typeof import('./src/components/Icons/Upload.vue')['default']
   }

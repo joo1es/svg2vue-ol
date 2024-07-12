@@ -78,6 +78,12 @@ async function download() {
         loading.value = false
     }
 }
+
+function sort() {
+    files.value.sort((a, b) => {
+        return a.name.localeCompare(b.name)
+    })
+}
 </script>
 
 <template>
@@ -101,6 +107,11 @@ async function download() {
                     <Remove />
                 </template>
             </NButton>
+            <NButton type="info" :disabled="files.length === 0" round @click="sort">
+                <template #icon>
+                    <Sort />
+                </template>
+            </NButton>
             <NButton type="success" :disabled="files.length === 0" round :loading="loading" @click="download">
                 <template #icon>
                     <Download />
@@ -113,25 +124,28 @@ async function download() {
 
 <style lang="scss" scoped>
 .header {
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     background-color: #f0f0f0cc;
-     position: sticky;
-     top: 0;
-     z-index: 10;
-     height: 72px;
-     backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0cc;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: 72px;
+    backdrop-filter: blur(10px);
 }
 .tools {
-     position: fixed;
-     bottom: 10px;
-     left: 50%;
-     transform: translateX(-50%);
-     background-color: #f0f0f0cc;
-     backdrop-filter: blur(10px);
-     padding: 10px 20px;
-     border-radius: 40px;
-     font-size: 14px;
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f0f0f0cc;
+    backdrop-filter: blur(10px);
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 14px;
+}
+.svg-flip-list {
+    margin-bottom: 80px;
 }
 </style>
