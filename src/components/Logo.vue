@@ -1,6 +1,6 @@
 <template>
     <div class="logo">
-        <a href="https://joo1es.github.io/svg2vue-ol/" target="_blank">
+        <a href="https://github.com/joo1es/svg2vue-ol" target="_blank">
             <span class="logo-svg">svg</span>
             <span class="logo-2">2</span>
             <span class="logo-vue">VUE</span>
