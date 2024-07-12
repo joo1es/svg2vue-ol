@@ -4,7 +4,6 @@ import router from './router'
 import { createPinia } from 'pinia'
 
 import './requestInit'
-import './permission'
 
 import 'reset-css'
 import './assets/index.scss'

@@ -12,11 +12,13 @@ function handleFilePick() {
 }
 
 function handleChange(e: Event) {
-    const target = e.target as HTMLInputElement
+    const target = e.currentTarget as HTMLInputElement
+    console.log(target.files)
     if (!target.files) return
     for (const file of target.files) {
         pushFile(file)
     }
+    target.value = ''
 }
 
 document.addEventListener('paste', handlePaste)
@@ -66,7 +68,7 @@ function handleSvgItemClick(e: MouseEvent) {
 </script>
 
 <template>
-    <TransitionGroup name="list" class="svg-list" tag="div">
+    <TransitionGroup name="flip-list" class="svg-flip-list" tag="div">
         <div
             class="svg-item svg-item--upload"
             @drop.prevent="handleFileDrop"
@@ -76,7 +78,7 @@ function handleSvgItemClick(e: MouseEvent) {
         >
             <div class="svg-item-upload" @click="handleFilePick">
                 Upload
-                <input @change="handleChange" ref="fileRef" type="file" multiple accept=".svg" />
+                <input @input="handleChange" ref="fileRef" type="file" multiple accept=".svg" />
             </div>
         </div>
         <div
@@ -102,24 +104,30 @@ function handleSvgItemClick(e: MouseEvent) {
 </template>
 
 <style lang="scss" scoped>
-.svg-list {
+.svg-flip-list {
     max-width: 1200px;
     margin: 40px auto;
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 20px;
-    padding: 0 20px;
     position: relative;
+    --gap: 20px;
+    --row-items: 5;
+    padding-right: var(--gap);
     .svg-item {
         background-color: #f5f5f5;
-        height: 20px;
-        padding-top: 100%;
-        position: relative;
         border-radius: 10px;
         overflow: hidden;
         border: 2px solid #eee;
         box-sizing: border-box;
         transition: .2s;
+        aspect-ratio: 1 / 1;
+        display: inline-flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        width: calc(100% / var(--row-items) - var(--gap));
+        margin-left: var(--gap);
+        margin-bottom: var(--gap);
+        vertical-align: middle;
         &:hover,
         &:has(:focus) {
             border-color: #40ab7f;
@@ -128,18 +136,12 @@ function handleSvgItemClick(e: MouseEvent) {
             }
         }
         > img {
-            position: absolute;
-            top: 15%;
-            left: 15%;
-            width: 70%;
-            height: calc(70% - 34px);
+            flex: 1;
+            min-height: 0;
             object-fit: contain;
         }
         input {
-            position: absolute;
-            bottom: 5%;
-            left: 5%;
-            width: 90%;
+            width: 100%;
             border-radius: 10px;
             border: 2px solid #eee;
             outline: none;
@@ -147,6 +149,7 @@ function handleSvgItemClick(e: MouseEvent) {
             box-sizing: border-box;
             font-size: 14px;
             transition: .2s;
+            margin-top: 10px;
             &:focus {
                 border-color: #40ab7f;
             }
@@ -157,18 +160,9 @@ function handleSvgItemClick(e: MouseEvent) {
     }
     .svg-item-upload {
         color: #ccc;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         font-family: Impact;
         font-size: 36px;
         box-sizing: border-box;
-        border-radius: inherit;
         cursor: pointer;
         transition: .2s;
         letter-spacing: -1px;
@@ -179,24 +173,24 @@ function handleSvgItemClick(e: MouseEvent) {
 }
 </style>
 
-<style lang="scss">
+<style>
 /* 1. 声明过渡效果 */
-.list-move,
-.list-enter-active,
-.list-leave-active {
+.flip-list-move,
+.flip-list-enter-active,
+.flip-list-leave-active {
   transition: all .4s;
 }
 
 /* 2. 声明进入和离开的状态 */
-.list-enter-from,
-.list-leave-to {
+.flip-list-enter-from,
+.flip-list-leave-to {
   opacity: 0;
   transform: translateX(-30%);
 }
 
 /* 3. 确保离开的项目被移除出了布局流
       以便正确地计算移动时的动画效果。 */
-.list-leave-active {
+.flip-list-leave-active {
   position: absolute;
 }
 </style>
