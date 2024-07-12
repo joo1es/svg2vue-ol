@@ -104,17 +104,17 @@ function sort() {
             </NCheckbox>
             <NButton type="error" :disabled="selected.size === 0" round @click="remove(selected)">
                 <template #icon>
-                    <Remove />
+                    <NIcon><Remove /></NIcon>
                 </template>
             </NButton>
             <NButton type="info" :disabled="files.length === 0" round @click="sort">
                 <template #icon>
-                    <Sort />
+                    <NIcon><Sort /></NIcon>
                 </template>
             </NButton>
             <NButton type="success" :disabled="files.length === 0" round :loading="loading" @click="download">
                 <template #icon>
-                    <Download />
+                    <NIcon><Download /></NIcon>
                 </template>
                 Download
             </NButton>
