@@ -3,6 +3,7 @@ const files = defineModel<{
     file: File,
     src: string,
     name: string,
+    key: symbol
 }[]>()
 const fileRef = ref<HTMLInputElement>()
 
@@ -31,7 +32,8 @@ function pushFile(file: File) {
         const targetFile = {
             file,
             src: reader.result,
-            name: file.name
+            name: file.name,
+            key: Symbol()
         }
         files.value?.push(targetFile)
     })
@@ -64,12 +66,13 @@ function handleSvgItemClick(e: MouseEvent) {
 </script>
 
 <template>
-    <div class="svg-list">
+    <TransitionGroup name="list" class="svg-list" tag="div">
         <div
             class="svg-item svg-item--upload"
             @drop.prevent="handleFileDrop"
             @dragenter.prevent
             @dragover.prevent
+            key="upload"
         >
             <div class="svg-item-upload" @click="handleFilePick">
                 Upload
@@ -77,16 +80,25 @@ function handleSvgItemClick(e: MouseEvent) {
             </div>
         </div>
         <div
+            class="svg-item svg-item--upload"
+            v-if="files && files.length > 0"
+            key="download"
+        >
+            <div class="svg-item-upload">
+                Download
+            </div>
+        </div>
+        <div
             class="svg-item"
             v-for="(file, index) in files"
-            :key="index"
+            :key="file.key"
             @click.middle.stop="files?.splice(index, 1)"
             @click="handleSvgItemClick"
         >
             <img :src="file.src" />
             <input v-model="file.name" />
         </div>
-    </div>
+    </TransitionGroup>
 </template>
 
 <style lang="scss" scoped>
@@ -97,6 +109,7 @@ function handleSvgItemClick(e: MouseEvent) {
     grid-template-columns: repeat(5, 1fr);
     gap: 20px;
     padding: 0 20px;
+    position: relative;
     .svg-item {
         background-color: #f5f5f5;
         height: 20px;
@@ -130,7 +143,7 @@ function handleSvgItemClick(e: MouseEvent) {
             border-radius: 10px;
             border: 2px solid #eee;
             outline: none;
-            padding: 6px 10px;
+            padding: 8px 10px;
             box-sizing: border-box;
             font-size: 14px;
             transition: .2s;
@@ -158,9 +171,32 @@ function handleSvgItemClick(e: MouseEvent) {
         border-radius: inherit;
         cursor: pointer;
         transition: .2s;
+        letter-spacing: -1px;
         input {
             display: none;
         }
     }
+}
+</style>
+
+<style lang="scss">
+/* 1. 声明过渡效果 */
+.list-move,
+.list-enter-active,
+.list-leave-active {
+  transition: all .4s;
+}
+
+/* 2. 声明进入和离开的状态 */
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(-30%);
+}
+
+/* 3. 确保离开的项目被移除出了布局流
+      以便正确地计算移动时的动画效果。 */
+.list-leave-active {
+  position: absolute;
 }
 </style>
