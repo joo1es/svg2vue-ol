@@ -23,9 +23,6 @@ importers:
       naive-ui:
         specifier: ^2.38.1
         version: 2.38.1(vue@3.4.31(typescript@5.0.2))
-      pinia:
-        specifier: ^2.1.7
-        version: 2.1.7(typescript@5.0.2)(vue@3.4.31(typescript@5.0.2))
       reset-css:
         specifier: ^5.0.2
         version: 5.0.2
@@ -1876,18 +1873,6 @@ packages:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
 
-  pinia@2.1.7:
-    resolution: {integrity: sha512-+C2AHFtcFqjPih0zpYuvof37SFxMQ7OEG2zV9jRI12i9BOy3YQVAHwdKtyyc8pDcDyIc33WCIsZaCFWU7WWxGQ==}
-    peerDependencies:
-      '@vue/composition-api': ^1.4.0
-      typescript: '>=4.4.4'
-      vue: ^2.6.14 || ^3.3.0
-    peerDependenciesMeta:
-      '@vue/composition-api':
-        optional: true
-      typescript:
-        optional: true
-
   pkg-types@1.0.3:
     resolution: {integrity: sha512-nN7pYi0AQqJnoLPC9eHFQ8AcyaixBUOwvqc5TDnIKCMEE6I0y8P7OKA7fPexsXGCGxQDl/cmrLAp26LhcwxZ4A==}
 
@@ -2206,17 +2191,6 @@ packages:
     resolution: {integrity: sha512-iox0I3RZzxtKlcgYaStQYKEzWWGAduMmq+jS7OrNdQo1FgGfPMubGL3uGHOU9n97NIvfFDBGnpSvkWyb/NSn/Q==}
     peerDependencies:
       vue: ^3.0.0
-
-  vue-demi@0.14.6:
-    resolution: {integrity: sha512-8QA7wrYSHKaYgUxDA5ZC24w+eHm3sYCbp0EzcDwKqN3p6HqtTCGR/GVsPyZW92unff4UlcSh++lmqDWN3ZIq4w==}
-    engines: {node: '>=12'}
-    hasBin: true
-    peerDependencies:
-      '@vue/composition-api': ^1.0.0-rc.1
-      vue: ^3.0.0-0 || ^2.6.0
-    peerDependenciesMeta:
-      '@vue/composition-api':
-        optional: true
 
   vue-demi@0.14.7:
     resolution: {integrity: sha512-EOG8KXDQNwkJILkx/gPcoL/7vH+hORoBaKgGe+6W7VFMvCYJfmF2dGbvgDroVnI8LU7/kTu8mbjRZGBU1z9NTA==}
@@ -4249,14 +4223,6 @@ snapshots:
 
   picomatch@2.3.1: {}
 
-  pinia@2.1.7(typescript@5.0.2)(vue@3.4.31(typescript@5.0.2)):
-    dependencies:
-      '@vue/devtools-api': 6.5.1
-      vue: 3.4.31(typescript@5.0.2)
-      vue-demi: 0.14.6(vue@3.4.31(typescript@5.0.2))
-    optionalDependencies:
-      typescript: 5.0.2
-
   pkg-types@1.0.3:
     dependencies:
       jsonc-parser: 3.2.0
@@ -4585,10 +4551,6 @@ snapshots:
   vooks@0.2.12(vue@3.4.31(typescript@5.0.2)):
     dependencies:
       evtd: 0.2.4
-      vue: 3.4.31(typescript@5.0.2)
-
-  vue-demi@0.14.6(vue@3.4.31(typescript@5.0.2)):
-    dependencies:
       vue: 3.4.31(typescript@5.0.2)
 
   vue-demi@0.14.7(vue@3.4.31(typescript@5.0.2)):

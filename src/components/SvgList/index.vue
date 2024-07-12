@@ -35,7 +35,7 @@ onUnmounted(() => {
 
 function pushFile(file: File) {
     const reader = new FileReader()
-    reader.addEventListener('load', ()=> {
+    reader.addEventListener('load', () => {
         if (typeof reader.result !== 'string') return
         const targetFile = {
             file,
@@ -48,7 +48,7 @@ function pushFile(file: File) {
     reader.readAsDataURL(file)
 }
 
-function handlePaste(event:  ClipboardEvent) {
+function handlePaste(event: ClipboardEvent) {
     addItems(event.clipboardData && event.clipboardData.items)
 }
 function handleFileDrop(event: DragEvent) {
@@ -59,7 +59,7 @@ function addItems(items?: DataTransferItemList | null) {
     if (items && items.length) {
         for (let i = 0; i < items.length; i++) {
             if (items[i].type.indexOf('image/svg+xml') !== -1) {
-                const file = items[i].getAsFile();
+                const file = items[i].getAsFile()
                 if (file) pushFile(file)
                 break
             }
@@ -85,7 +85,7 @@ function handleSvgItemClick(e: MouseEvent, file: FileModel) {
         const currentIndex = files.value.findIndex(f => f.key === file.key)
         const start = Math.min(startIndex, currentIndex)
         const max = Math.abs(startIndex - currentIndex)
-        for (let i = start; i <= max; i ++) {
+        for (let i = start; i <= max; i++) {
             if (files.value[i]) {
                 selected.value.add(files.value[i].key)
             }
@@ -118,31 +118,31 @@ const filesWithName = computed(() => {
 <template>
     <TransitionGroup name="flip-list" class="svg-flip-list" tag="div">
         <div
+            key="upload"
             class="svg-item svg-item--upload"
             @drop.prevent="handleFileDrop"
             @dragenter.prevent
             @dragover.prevent
             @click="handleFilePick"
-            key="upload"
         >
             <div class="svg-item-upload">
                 <NIcon><Upload /></NIcon>
-                <input @input="handleChange" ref="fileRef" type="file" multiple accept=".svg" />
+                <input ref="fileRef" type="file" multiple accept=".svg" @input="handleChange" >
             </div>
         </div>
         <div
-            class="svg-item"
-            :class="{ selected: file.selected }"
             v-for="(file, index) in filesWithName"
             :key="file.key"
+            class="svg-item"
+            :class="{ selected: file.selected }"
             @click.middle.stop="$emit('remove', [file.key])"
             @click.stop="handleSvgItemClick($event, file)"
         >
             <span :title="file.targetName">{{ file.targetName }}.vue</span>
             <div class="svg-item-img">
-                <img :src="file.src" />
+                <img :src="file.src" >
             </div>
-            <input v-model="files[index].name" @click.stop />
+            <input v-model="files[index].name" @click.stop >
         </div>
     </TransitionGroup>
 </template>

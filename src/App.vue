@@ -67,8 +67,8 @@ async function download() {
           }
           await Promise.all(promises)
           archive.file(`index.${typescript.value ? 'ts' : 'js'}`, indexContent.join('\n'))
-          const content = await archive.generateAsync({ type:"blob" })
-          const link = document.createElement("a");
+          const content = await archive.generateAsync({ type:'blob' })
+          const link = document.createElement('a')
           link.href = URL.createObjectURL(content)
           link.download = 'Icons.zip'
           link.click()
@@ -81,34 +81,34 @@ async function download() {
 </script>
 
 <template>
-     <header class="header">
-          <Logo />
-     </header>
-     <svg-list v-model="files" v-model:selected="selected" @remove="remove" />
-     <div class="tools" @click.stop>
-          <NSpace align="center">
-               <NCheckbox v-model:checked="checked" :checked-value="1" :unchecked-value="0" :indeterminate="selected.size > 0 && !checked">
-                    {{ selected.size }} item{{ selected.size === 1 ? '' : 's' }}
-               </NCheckbox>
-               <NCheckbox v-model:checked="currentColor" :checked-value="1" :unchecked-value="0">
-                    Set currentColor
-               </NCheckbox>
-               <NCheckbox v-model:checked="typescript" :checked-value="1" :unchecked-value="0">
-                    Use typescript
-               </NCheckbox>
-               <NButton type="error" :disabled="selected.size === 0" @click="remove(selected)" round>
-                    <template #icon>
-                         <Remove />
-                    </template>
-               </NButton>
-               <NButton type="success" @click="download" :disabled="files.length === 0" round :loading="loading">
-                    <template #icon>
-                         <Download />
-                    </template>
-                    Download
-               </NButton>
-          </NSpace>
-     </div>
+    <header class="header">
+        <Logo />
+    </header>
+    <svg-list v-model="files" v-model:selected="selected" @remove="remove" />
+    <div class="tools" @click.stop>
+        <NSpace align="center">
+            <NCheckbox v-model:checked="checked" :checked-value="1" :unchecked-value="0" :indeterminate="selected.size > 0 && !checked">
+                {{ selected.size }} item{{ selected.size === 1 ? '' : 's' }}
+            </NCheckbox>
+            <NCheckbox v-model:checked="currentColor" :checked-value="1" :unchecked-value="0">
+                Set currentColor
+            </NCheckbox>
+            <NCheckbox v-model:checked="typescript" :checked-value="1" :unchecked-value="0">
+                Use typescript
+            </NCheckbox>
+            <NButton type="error" :disabled="selected.size === 0" round @click="remove(selected)">
+                <template #icon>
+                    <Remove />
+                </template>
+            </NButton>
+            <NButton type="success" :disabled="files.length === 0" round :loading="loading" @click="download">
+                <template #icon>
+                    <Download />
+                </template>
+                Download
+            </NButton>
+        </NSpace>
+    </div>
 </template>
 
 <style lang="scss" scoped>

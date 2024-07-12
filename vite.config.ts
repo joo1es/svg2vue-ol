@@ -10,7 +10,7 @@ import { oasisEndUtilsPresets } from '@oasis-end/utils/dist/preset'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    base: './',
+    base: '/svg2vue-ol',
     server: {
         port: 3888
     },
