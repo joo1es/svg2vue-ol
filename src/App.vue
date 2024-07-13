@@ -94,6 +94,7 @@ useEventListener('keyup', e => {
         checked.value = 1
     }
     if (e.code === 'Delete') {
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
         remove(selected.value)
     }
 })
