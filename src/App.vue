@@ -98,6 +98,7 @@ const moving = ref(false)
 const hadMoved = ref(false)
 useEventListener('mousedown', e => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+    if (e.button !== 0) return
     startX.value = e.pageX
     startY.value = e.pageY
     moveX.value = e.pageX
