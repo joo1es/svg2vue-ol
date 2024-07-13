@@ -90,6 +90,7 @@ module.exports = {
             'multiline': 'always'
         }],
         'vue/html-self-closing': 2,
-        'vue/no-multi-spaces': 2
+        'vue/no-multi-spaces': 2,
+        'vue/no-v-text-v-html-on-component': 0
     }
 }

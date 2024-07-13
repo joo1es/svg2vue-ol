@@ -1,5 +1,5 @@
 export interface FileModel {
-    src: string,
+    content: string,
     name: string,
     key: string
 }

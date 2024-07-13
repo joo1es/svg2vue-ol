@@ -1,23 +1,11 @@
-export function getTemplate (svg: string, currentColor = 1, typescript = 1) {
-    // only need svg part
-
-    const match = svg.match(/<svg([\s\S]*)<\/svg>/)
-    
-    svg = (match?.[0] || '')
-        .replace(/<style(.*)<\/style>/, '')
-        .replace(/<script(.*)<\/script>/, '')
+export function getTemplate(svg: string, currentColor = 1, typescript = 1) {
+    svg = getSvg(svg)
 
     if (currentColor) {
-        svg = svg.replace(/(stroke|fill)=(['"])(.*?)(['"])/g, (_, name, quote, content, quote2) => {
-            if (content === 'none') {
-                return `${name}=${quote}${content}${quote2}`
-            } else {
-                return `${name}=${quote}currentColor${quote2}`
-            }
-        })
+        svg = setCurrentColor(svg)
     }
 
-    const ids = svg.matchAll(/ id=\"(.+?)\"/g)
+    const ids = svg.matchAll(/ id="(.+?)"/g)
 
     const data: [string, string][] = []
     let count = 0
@@ -53,4 +41,19 @@ export default defineComponent({
 })
 </script>` : '' }
 `
+}
+
+export function getSvg(svg: string) {
+    const match = svg.match(/<svg([\s\S]*)<\/svg>/)
+    return match?.[0] || ''
+}
+
+export function setCurrentColor(svg: string) {
+    return svg.replace(/(stroke|fill)=(['"])(.*?)(['"])/g, (_, name, quote, content, quote2) => {
+        if (content === 'none') {
+            return `${name}=${quote}${content}${quote2}`
+        } else {
+            return `${name}=${quote}currentColor${quote2}`
+        }
+    })
 }

@@ -2,15 +2,16 @@
 import { FileModel } from '@/types'
 import { useEventListener, useLocalStorage } from '@vueuse/core'
 import JSZip from 'jszip'
-import { getTargetName } from '@/utils/getTargetName'
-import { getTemplate } from '@/utils/getTemplate'
-import { base64ToBlob } from '@/utils/base64ToBlob'
+import { getTargetName, getTemplate, setCurrentColor } from '@/utils'
 import localforage from 'localforage'
+import { NColorPicker } from 'naive-ui'
 
 const selected = ref<Set<string>>(new Set())
 
 const typescript = useLocalStorage('typescript', 1)
-const currentColor = useLocalStorage('currentColor', 1)
+const currentColor = useLocalStorage('currentColor', 0)
+const allowVue = useLocalStorage('allowVue', 1)
+const color = useLocalStorage('color', '#40ab7fff')
 
 const files = ref<FileModel[]>([])
 
@@ -52,20 +53,13 @@ async function download() {
                 } else {
                     names.set(nameMap, (names.get(nameMap) || 0) + 1)
                 }
-                const fileReader = new FileReader()
-                fileReader.readAsText(base64ToBlob(file.src), 'utf-8')
-                fileReader.onloadend = function(evt) {
-                        // 在文件读取完毕后，其内容将被保存在result属性中
-                        const content = evt.target?.result
-                        if (typeof content === 'string') {
-                            const targetName = getTargetName(nameMap)
-                            indexContent.push(`export { default as ${targetName} } from './${targetName}.vue'`)
-                            archive.file(`${targetName}.vue`, getTemplate(content, currentColor.value, typescript.value))
-                        }
-                        resolve()
+                const content = file.content
+                if (typeof content === 'string') {
+                    const targetName = getTargetName(nameMap)
+                    indexContent.push(`export { default as ${targetName} } from './${targetName}.vue'`)
+                    archive.file(`${targetName}.vue`, getTemplate(content, currentColor.value, typescript.value))
                 }
-                fileReader.onabort = reject
-                fileReader.onerror = reject
+                resolve()
             }))
         }
         await Promise.all(promises)
@@ -86,6 +80,14 @@ function sort() {
     files.value.sort((a, b) => {
         return a.name.localeCompare(b.name)
     })
+}
+
+function setToCurrentColor() {
+    for (const file of files.value) {
+        if (selected.value.has(file.key)) {
+            file.content = setCurrentColor(file.content)
+        }
+    }
 }
 
 useEventListener('keyup', e => {
@@ -117,39 +119,57 @@ watch(files, () => {
 </script>
 
 <template>
-    <header class="header">
-        <Logo />
-    </header>
-    <svg-list v-if="dataInit" v-model="files" v-model:selected="selected" @remove="remove" />
-    <div class="tools" @click.stop>
-        <NSpace align="center">
-            <NCheckbox v-model:checked="checked" :checked-value="1" :unchecked-value="0" :indeterminate="selected.size > 0 && !checked">
-                {{ selected.size }} item{{ selected.size === 1 ? '' : 's' }}
-            </NCheckbox>
-            <NCheckbox v-model:checked="currentColor" :checked-value="1" :unchecked-value="0">
-                Set currentColor
-            </NCheckbox>
-            <NCheckbox v-model:checked="typescript" :checked-value="1" :unchecked-value="0">
-                Use typescript
-            </NCheckbox>
-            <NButton type="error" :disabled="selected.size === 0" round @click="remove(selected)">
-                <template #icon>
-                    <NIcon><Remove /></NIcon>
-                </template>
-            </NButton>
-            <NButton type="info" :disabled="files.length === 0" round @click="sort">
-                <template #icon>
-                    <NIcon><Sort /></NIcon>
-                </template>
-            </NButton>
-            <NButton type="success" :disabled="files.length === 0" round :loading="loading" @click="download">
-                <template #icon>
-                    <NIcon><Download /></NIcon>
-                </template>
-                Download
-            </NButton>
-        </NSpace>
-    </div>
+    <n-config-provider :theme-overrides="{ common: { primaryColor: '#40ab7f' } }">
+        <header class="header">
+            <Logo />
+        </header>
+        <svg-list v-if="dataInit" v-model="files" v-model:selected="selected" :allowVue="allowVue" :color="color" @remove="remove" />
+        <div class="tools" @click.stop>
+            <NSpace align="center">
+                <NCheckbox v-model:checked="checked" :checked-value="1" :unchecked-value="0" :indeterminate="selected.size > 0 && !checked">
+                    {{ selected.size }} item{{ selected.size === 1 ? '' : 's' }}
+                </NCheckbox>
+                <n-popover trigger="click">
+                    <NSpace vertical @click.stop>
+                        <NColorPicker v-model:value="color" :modes="['hex']" size="small" />
+                        <NButton block :disabled="selected.size === 0" @click="setToCurrentColor">Set to&nbsp;<span :style="{ borderBottom: `2px solid ${color}` }">currentColor</span></NButton>
+                        <NCheckbox v-model:checked="currentColor" :checked-value="1" :unchecked-value="0">
+                            All set to&nbsp;<span :style="{ borderBottom: `2px solid ${color}`, marginLeft: '.1em' }">currentColor</span>
+                        </NCheckbox>
+                        <NCheckbox v-model:checked="typescript" :checked-value="1" :unchecked-value="0">
+                            Use typescript
+                        </NCheckbox>
+                        <NCheckbox v-model:checked="allowVue" :checked-value="1" :unchecked-value="0">
+                            Accept .vue file
+                        </NCheckbox>
+                    </NSpace>
+                    <template #trigger>
+                        <NButton round>
+                            <template #icon>
+                                <NIcon><Settings /></NIcon>
+                            </template>
+                        </NButton>
+                    </template>
+                </n-popover>
+                <NButton type="error" :disabled="selected.size === 0" round @click="remove(selected)">
+                    <template #icon>
+                        <NIcon><Remove /></NIcon>
+                    </template>
+                </NButton>
+                <NButton type="info" :disabled="files.length === 0" round @click="sort">
+                    <template #icon>
+                        <NIcon><Sort /></NIcon>
+                    </template>
+                </NButton>
+                <NButton type="primary" :disabled="files.length === 0" round :loading="loading" @click="download">
+                    <template #icon>
+                        <NIcon><Download /></NIcon>
+                    </template>
+                    Download
+                </NButton>
+            </NSpace>
+        </div>
+    </n-config-provider>
 </template>
 
 <style lang="scss" scoped>
@@ -177,5 +197,8 @@ watch(files, () => {
 }
 .svg-flip-list {
     margin-bottom: 80px;
+}
+:deep(.n-color-picker-trigger__value) {
+    display: none;
 }
 </style>

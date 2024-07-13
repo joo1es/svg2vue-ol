@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { getTargetName } from '@/utils/getTargetName'
 import { FileModel } from '@/types'
+import { getSvg } from '@/utils'
+
+defineProps<{
+    allowVue: number,
+    color: string
+}>()
 
 defineEmits(['remove'])
 
@@ -37,14 +43,15 @@ function pushFile(file: File) {
     const reader = new FileReader()
     reader.addEventListener('load', () => {
         if (typeof reader.result !== 'string') return
+        const content = getSvg(reader.result)
         const targetFile = {
-            src: reader.result,
+            content,
             name: file.name.split('.')[0],
             key: Math.random().toString(36).slice(2)
         }
-        files.value?.push(targetFile)
+        if (content) files.value?.push(targetFile)
     })
-    reader.readAsDataURL(file)
+    reader.readAsText(file)
 }
 
 function handlePaste(event: ClipboardEvent) {
@@ -126,7 +133,7 @@ const filesWithName = computed(() => {
         >
             <div class="svg-item-upload">
                 <NIcon><Upload /></NIcon>
-                <input ref="fileRef" type="file" multiple accept=".svg" @input="handleChange" >
+                <input ref="fileRef" type="file" multiple :accept="allowVue ? '.svg,.vue' : '.svg'" @input="handleChange" >
             </div>
         </div>
         <div
@@ -138,8 +145,8 @@ const filesWithName = computed(() => {
             @click.stop="handleSvgItemClick($event, file)"
         >
             <span :title="file.targetName">{{ file.targetName }}.vue</span>
-            <div class="svg-item-img">
-                <img :src="file.src" >
+            <div class="svg-item-img" :style="{ color }">
+                <NIcon v-html="file.content"/>
             </div>
             <input v-model="files[index].name" @click.stop >
         </div>
@@ -195,10 +202,7 @@ const filesWithName = computed(() => {
             min-height: 0;
             display: flex;
             align-items: center;
-            > img {
-                height: 64px;
-                object-fit: contain;
-            }
+            font-size: 64px;
         }
         input {
             width: 100%;
