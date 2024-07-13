@@ -46,7 +46,7 @@ async function download() {
         const promises: Promise<void>[] = []
         const indexContent: string[] = []
         for (const file of targetFiles) {
-            promises.push(new Promise<void>((resolve, reject) => {
+            promises.push(new Promise<void>(resolve => {
                 const nameMap = file.name || 'Icon'
                 if (names.get(nameMap) === void 0) {
                     names.set(nameMap, 0)
@@ -64,7 +64,7 @@ async function download() {
         }
         await Promise.all(promises)
         archive.file(`index.${typescript.value ? 'ts' : 'js'}`, indexContent.join('\n'))
-        const content = await archive.generateAsync({ type:'blob' })
+        const content = await archive.generateAsync({ type: 'blob' })
         const link = document.createElement('a')
         link.href = URL.createObjectURL(content)
         link.download = 'Icons.zip'
