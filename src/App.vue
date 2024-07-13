@@ -135,7 +135,7 @@ useEventListener('mouseup', e => {
                 })
                 if (rectanglesIntersecting && currentItem.dataset.key) intersectingKeys.add(currentItem.dataset.key)
             })
-            if (e.ctrlKey) {
+            if (e.ctrlKey || e.shiftKey) {
                 for (const key of intersectingKeys) {
                     selected.value.add(key)
                 }
