@@ -131,7 +131,21 @@ watch(files, () => {
                 </NCheckbox>
                 <n-popover trigger="click">
                     <NSpace vertical @click.stop>
-                        <NColorPicker v-model:value="color" :modes="['hex']" size="small" />
+                        <NColorPicker
+                            v-model:value="color"
+                            :modes="['hex']"
+                            size="small"
+                            :swatches="[
+                                '#000',
+                                '#333',
+                                '#ccc',
+                                '#40ab7f',
+                                '#2080F0',
+                                '#F0A020',
+                                'rgba(208, 48, 80, 1)',
+                                '#11B8CAFF',
+                            ]"
+                        />
                         <NButton block :disabled="selected.size === 0" @click="setToCurrentColor">Set to&nbsp;<span :style="{ borderBottom: `2px solid ${color}` }">currentColor</span></NButton>
                         <NCheckbox v-model:checked="currentColor" :checked-value="1" :unchecked-value="0">
                             All set to&nbsp;<span :style="{ borderBottom: `2px solid ${color}`, marginLeft: '.1em' }">currentColor</span>
