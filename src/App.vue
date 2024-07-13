@@ -2,7 +2,7 @@
 import { FileModel } from '@/types'
 import { useEventListener, useLocalStorage } from '@vueuse/core'
 import JSZip from 'jszip'
-import { getTargetName, getTemplate, setCurrentColor } from '@/utils'
+import { areRectanglesIntersecting, getTargetName, getTemplate, setCurrentColor } from '@/utils'
 import localforage from 'localforage'
 import { NColorPicker } from 'naive-ui'
 
@@ -90,6 +90,80 @@ function setToCurrentColor() {
     }
 }
 
+const startX = ref(0)
+const startY = ref(0)
+const moveX = ref(0)
+const moveY = ref(0)
+const moving = ref(false)
+const hadMoved = ref(false)
+useEventListener('mousedown', e => {
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+    startX.value = e.pageX
+    startY.value = e.pageY
+    moveX.value = e.pageX
+    moveY.value = e.pageY
+    moving.value = true
+    hadMoved.value = false
+})
+useEventListener('mousemove', e => {
+    if (!moving.value) return
+    hadMoved.value = true
+    moveX.value = e.pageX
+    moveY.value = e.pageY
+})
+useEventListener('mouseup', e => {
+    if (!hadMoved.value) {
+        const element = e.target as HTMLDivElement
+        if (
+            element &&
+            (element.classList.contains('n-config-provider') || element.classList.contains('svg-flip-list'))
+        ) {
+            selected.value.clear()
+        }
+    } else {
+        if (currentStyleNumber.value.width > 20 || currentStyleNumber.value.height > 20) {
+            const svgItems = document.getElementsByClassName('svg-item')
+            const intersectingKeys = new Set<string>()
+            Array.from(svgItems).forEach(item => {
+                const currentItem = item as HTMLDivElement
+                const boundingClientRect = currentItem.getBoundingClientRect()
+                const rectanglesIntersecting = areRectanglesIntersecting(currentStyleNumber.value, {
+                    left: boundingClientRect.left + document.documentElement.scrollLeft,
+                    top: boundingClientRect.top + document.documentElement.scrollTop,
+                    width: boundingClientRect.width,
+                    height: boundingClientRect.height
+                })
+                if (rectanglesIntersecting && currentItem.dataset.key) intersectingKeys.add(currentItem.dataset.key)
+            })
+            if (e.ctrlKey) {
+                for (const key of intersectingKeys) {
+                    selected.value.add(key)
+                }
+            } else {
+                selected.value = intersectingKeys
+            }
+        }
+    }
+    moving.value = false
+    hadMoved.value = false
+})
+const currentStyleNumber = computed(() => {
+    return {
+        top: Math.min(startY.value, moveY.value),
+        left: Math.min(startX.value, moveX.value),
+        height: Math.abs(startY.value - moveY.value),
+        width: Math.abs(startX.value - moveX.value),
+    }
+})
+const currentStyle = computed(() => {
+    return {
+        top: currentStyleNumber.value.top + 'px',
+        left: currentStyleNumber.value.left + 'px',
+        height: currentStyleNumber.value.height + 'px',
+        width: currentStyleNumber.value.width + 'px',
+    }
+})
+
 useEventListener('keyup', e => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
     if (e.ctrlKey && e.code === 'KeyA') {
@@ -119,18 +193,18 @@ watch(files, () => {
 </script>
 
 <template>
-    <n-config-provider :theme-overrides="{ common: { primaryColor: '#40ab7f' } }">
+    <n-config-provider :theme-overrides="{ common: { primaryColor: '#40ab7f', primaryColorHover: '#40ab7fcc' } }">
         <header class="header">
             <Logo />
         </header>
         <svg-list v-if="dataInit" v-model="files" v-model:selected="selected" :allowVue="allowVue" :color="color" @remove="remove" />
-        <div class="tools" @click.stop>
+        <div class="tools" @mousedown.stop>
             <NSpace align="center">
                 <NCheckbox v-model:checked="checked" :checked-value="1" :unchecked-value="0" :indeterminate="selected.size > 0 && !checked">
                     {{ selected.size }} item{{ selected.size === 1 ? '' : 's' }}
                 </NCheckbox>
-                <n-popover trigger="click">
-                    <NSpace vertical @click.stop>
+                <n-popover trigger="click" :to="false">
+                    <NSpace vertical>
                         <NColorPicker
                             v-model:value="color"
                             :modes="['hex']"
@@ -183,6 +257,7 @@ watch(files, () => {
                 </NButton>
             </NSpace>
         </div>
+        <div v-if="hadMoved" class="selecting-box" :style="currentStyle" />
     </n-config-provider>
 </template>
 
@@ -208,11 +283,19 @@ watch(files, () => {
     padding: 10px 20px;
     border-radius: 40px;
     font-size: 14px;
+    z-index: 10;
 }
 .svg-flip-list {
     margin-bottom: 80px;
 }
 :deep(.n-color-picker-trigger__value) {
     display: none;
+}
+.selecting-box {
+    border: 2px solid var(--primary-color);
+    position: absolute;
+    background-color: #40ab7f30;
+    z-index: 20;
+    border-radius: 2px;
 }
 </style>

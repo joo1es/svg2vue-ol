@@ -32,6 +32,6 @@
     }
 }
 .logo-vue {
-    color: #40ab7f;
+    color: var(--primary-color);
 }
 </style>

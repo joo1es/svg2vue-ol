@@ -28,7 +28,7 @@ function handleChange(e: Event) {
 }
 
 function clearSelected() {
-    selected.value.clear()
+    // selected.value.clear()
 }
 
 document.addEventListener('paste', handlePaste)
@@ -141,6 +141,7 @@ const filesWithName = computed(() => {
             :key="file.key"
             class="svg-item"
             :class="{ selected: file.selected }"
+            :data-key="file.key"
             @click.middle.stop="$emit('remove', [file.key])"
             @click.stop="handleSvgItemClick($event, file)"
         >
@@ -155,12 +156,24 @@ const filesWithName = computed(() => {
 
 <style lang="scss" scoped>
 .svg-flip-list {
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 40px auto;
     position: relative;
     --gap: 20px;
-    --row-items: 5;
+    --row-items: 6;
     padding-right: var(--gap);
+    @media (max-width: 1800px) and (min-width: 1400px) {
+        --row-items: 5;
+    }
+    @media (max-width: 1400px) and (min-width: 1000px) {
+        --row-items: 4;
+    }
+    @media (max-width: 1000px) and (min-width: 600px) {
+        --row-items: 3;
+    }
+    @media (max-width: 600px)  {
+        --row-items: 2;
+    }
     .svg-item {
         background-color: #f5f5f5;
         border-radius: 10px;
@@ -192,9 +205,9 @@ const filesWithName = computed(() => {
         }
         &:hover,
         &.selected {
-            border-color: #40ab7f;
+            border-color: var(--primary-color);
             .svg-item-upload {
-                color: #40ab7f;
+                color: var(--primary-color);
             }
         }
         .svg-item-img {
@@ -216,7 +229,7 @@ const filesWithName = computed(() => {
             margin-top: 10px;
             font-family: Fira Code;
             &:focus {
-                border-color: #40ab7f;
+                border-color: var(--primary-color);
             }
         }
         &.svg-item--upload {
