@@ -98,7 +98,9 @@ const moving = ref(false)
 const hadMoved = ref(false)
 useEventListener('mousedown', e => {
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
-    if (e.button !== 0) return
+    if (e.button !== 0) {
+        return
+    }
     startX.value = e.pageX
     startY.value = e.pageY
     moveX.value = e.pageX
@@ -117,7 +119,7 @@ useEventListener('mouseup', e => {
         const element = e.target as HTMLDivElement
         if (
             element &&
-            (element.classList.contains('n-config-provider') || element.classList.contains('svg-flip-list'))
+            (element === document.documentElement || element.classList.contains('n-config-provider') || element.classList.contains('svg-flip-list'))
         ) {
             selected.value.clear()
         }
