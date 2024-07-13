@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FileModel } from '@/types'
 import { useEventListener, useLocalStorage } from '@vueuse/core'
-import JSZip from 'jszip'
+import JSZip, { file } from 'jszip'
 import { getTargetName } from '@/utils/getTargetName'
 import { getTemplate } from '@/utils/getTemplate'
 import { base64ToBlob } from '@/utils/base64ToBlob'
@@ -98,8 +98,15 @@ useEventListener('keyup', e => {
     }
 })
 
+const dataInit = ref(false)
 localforage.getItem<string>('files').then(value => {
-    files.value = value ? JSON.parse(value) : []
+    try {
+        files.value = value ? JSON.parse(value) : []
+    } catch {
+        files.value = []
+    } finally {
+        dataInit.value = true
+    }
 })
 watch(files, () => {
     localforage.setItem('files', JSON.stringify(files.value))
@@ -112,7 +119,7 @@ watch(files, () => {
     <header class="header">
         <Logo />
     </header>
-    <svg-list v-model="files" v-model:selected="selected" @remove="remove" />
+    <svg-list v-if="dataInit" v-model="files" v-model:selected="selected" @remove="remove" />
     <div class="tools" @click.stop>
         <NSpace align="center">
             <NCheckbox v-model:checked="checked" :checked-value="1" :unchecked-value="0" :indeterminate="selected.size > 0 && !checked">
