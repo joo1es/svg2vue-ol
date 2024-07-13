@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FileModel } from '@/types'
 import { useEventListener, useLocalStorage } from '@vueuse/core'
-import JSZip, { file } from 'jszip'
+import JSZip from 'jszip'
 import { getTargetName } from '@/utils/getTargetName'
 import { getTemplate } from '@/utils/getTemplate'
 import { base64ToBlob } from '@/utils/base64ToBlob'
