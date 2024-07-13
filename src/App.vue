@@ -257,7 +257,7 @@ watch(files, () => {
                 </NButton>
             </NSpace>
         </div>
-        <div v-if="hadMoved" class="selecting-box" :style="currentStyle" />
+        <div v-show="hadMoved" class="selecting-box" :style="currentStyle" />
     </n-config-provider>
 </template>
 
