@@ -89,12 +89,12 @@ function sort() {
 }
 
 useEventListener('keyup', e => {
+    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
     if (e.ctrlKey && e.code === 'KeyA') {
         e.preventDefault()
         checked.value = 1
     }
     if (e.code === 'Delete') {
-        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
         remove(selected.value)
     }
 })
