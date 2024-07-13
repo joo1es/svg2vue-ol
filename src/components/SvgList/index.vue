@@ -4,7 +4,7 @@ import { FileModel } from '@/types'
 
 defineEmits(['remove'])
 
-const selected = defineModel<Set<symbol>>('selected', { required: true })
+const selected = defineModel<Set<string>>('selected', { required: true })
 const files = defineModel<FileModel[]>({ required: true })
 const fileRef = ref<HTMLInputElement>()
 
@@ -38,10 +38,9 @@ function pushFile(file: File) {
     reader.addEventListener('load', () => {
         if (typeof reader.result !== 'string') return
         const targetFile = {
-            file,
             src: reader.result,
             name: file.name.split('.')[0],
-            key: Symbol()
+            key: Math.random().toString(36).slice(2)
         }
         files.value?.push(targetFile)
     })
@@ -155,7 +154,6 @@ const filesWithName = computed(() => {
     --gap: 20px;
     --row-items: 5;
     padding-right: var(--gap);
-    user-select: none;
     .svg-item {
         background-color: #f5f5f5;
         border-radius: 10px;

@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { FileModel } from '@/types'
-import { useLocalStorage } from '@vueuse/core'
+import { useEventListener, useLocalStorage } from '@vueuse/core'
 import JSZip from 'jszip'
 import { getTargetName } from '@/utils/getTargetName'
 import { getTemplate } from '@/utils/getTemplate'
+import { base64ToBlob } from '@/utils/base64ToBlob'
+import localforage from 'localforage'
 
-const files = ref<FileModel[]>([])
-const selected = ref<Set<symbol>>(new Set())
+const selected = ref<Set<string>>(new Set())
 
 const typescript = useLocalStorage('typescript', 1)
 const currentColor = useLocalStorage('currentColor', 1)
+
+const files = ref<FileModel[]>([])
 
 const checked = computed({
     get() {
@@ -25,7 +28,7 @@ const checked = computed({
     }
 })
 
-function remove(keys: Set<symbol> | symbol[]) {
+function remove(keys: Set<string> | string[]) {
     for (const key of keys) {
         files.value = files.value.filter(file => keys instanceof Set ? !keys.has(file.key) : !keys.includes(file.key))
         selected.value.delete(key)
@@ -50,7 +53,7 @@ async function download() {
                     names.set(nameMap, (names.get(nameMap) || 0) + 1)
                 }
                 const fileReader = new FileReader()
-                fileReader.readAsText(file.file, 'utf-8')
+                fileReader.readAsText(base64ToBlob(file.src), 'utf-8')
                 fileReader.onloadend = function(evt) {
                         // 在文件读取完毕后，其内容将被保存在result属性中
                         const content = evt.target?.result
@@ -84,6 +87,25 @@ function sort() {
         return a.name.localeCompare(b.name)
     })
 }
+
+useEventListener('keyup', e => {
+    if (e.ctrlKey && e.code === 'KeyA') {
+        e.preventDefault()
+        checked.value = 1
+    }
+    if (e.code === 'Delete') {
+        remove(selected.value)
+    }
+})
+
+localforage.getItem<string>('files').then(value => {
+    files.value = value ? JSON.parse(value) : []
+})
+watch(files, () => {
+    localforage.setItem('files', JSON.stringify(files.value))
+}, {
+    deep: true
+})
 </script>
 
 <template>
