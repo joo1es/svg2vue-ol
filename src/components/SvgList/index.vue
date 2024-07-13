@@ -144,7 +144,7 @@ const filesWithName = computed(() => {
             @click.middle.stop="$emit('remove', [file.key])"
             @click.stop="handleSvgItemClick($event, file)"
         >
-            <span :title="file.targetName">{{ file.targetName }}.vue</span>
+            <span :title="file.targetName + '.vue'">{{ file.targetName }}.vue</span>
             <div class="svg-item-img" :style="{ color }">
                 <NIcon v-html="file.content"/>
             </div>
