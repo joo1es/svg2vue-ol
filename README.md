@@ -12,7 +12,7 @@ This tool helps you trans svg file to vue icon file with a visual interface.
 
 星星 -> XingXing.vue, xing-xing -> XingXing.vue.
 
-<img src="/demo/pinyin.png">
+<img src="/demo/pinyin.png" width="200px">
 
 ### Color preview
 
