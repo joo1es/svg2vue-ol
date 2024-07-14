@@ -3,7 +3,7 @@ import { getTargetName } from '@/utils/getTargetName'
 import { FileModel } from '@/types'
 import { getSvg } from '@/utils'
 
-defineProps<{
+const props = defineProps<{
     allowVue: number,
     color: string
 }>()
@@ -58,16 +58,16 @@ function handlePaste(event: ClipboardEvent) {
     addItems(event.clipboardData && event.clipboardData.items)
 }
 function handleFileDrop(event: DragEvent) {
+    dragover.value = false
     addItems(event.dataTransfer?.items)
 }
 
 function addItems(items?: DataTransferItemList | null) {
     if (items && items.length) {
         for (let i = 0; i < items.length; i++) {
-            if (items[i].type.indexOf('image/svg+xml') !== -1) {
+            if (items[i].type.indexOf('image/svg+xml') !== -1 || (props.allowVue && !items[i].type)) {
                 const file = items[i].getAsFile()
                 if (file) pushFile(file)
-                break
             }
         }
     }
@@ -119,6 +119,8 @@ const filesWithName = computed(() => {
         }
     }) || []
 })
+
+const dragover = ref(false)
 </script>
 
 <template>
@@ -126,9 +128,12 @@ const filesWithName = computed(() => {
         <div
             key="upload"
             class="svg-item svg-item--upload"
+            :class="{ dragover }"
             @drop.prevent="handleFileDrop"
-            @dragenter.prevent
-            @dragover.prevent
+            @dragenter.prevent="dragover = true"
+            @dragover.prevent="dragover = true"
+            @dragend="dragover = false"
+            @dragleave="dragover = false"
             @click="handleFilePick"
         >
             <div class="svg-item-upload">
@@ -204,7 +209,8 @@ const filesWithName = computed(() => {
             margin-bottom: 5px;
         }
         &:hover,
-        &.selected {
+        &.selected,
+        &.dragover {
             border-color: var(--primary-color);
             .svg-item-upload {
                 color: var(--primary-color);
