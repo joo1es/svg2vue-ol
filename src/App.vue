@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FileModel } from '@/types'
-import { useEventListener, useLocalStorage } from '@vueuse/core'
+import { useEventListener, useLocalStorage, useRefHistory } from '@vueuse/core'
 import JSZip from 'jszip'
 import { areRectanglesIntersecting, getTargetName, getTemplate, setCurrentColor } from '@/utils'
 import localforage from 'localforage'
@@ -14,6 +14,10 @@ const allowVue = useLocalStorage('allowVue', 1)
 const color = useLocalStorage('color', '#40ab7fff')
 
 const files = ref<FileModel[]>([])
+const { undo, canUndo, redo, canRedo, clear } = useRefHistory(files, {
+    capacity: 10,
+    deep: true
+})
 
 const checked = computed({
     get() {
@@ -173,6 +177,11 @@ useEventListener('keyup', e => {
         e.preventDefault()
         checked.value = 1
     }
+    if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ') {
+        if (canRedo.value) redo()
+    } else if (e.ctrlKey && e.code === 'KeyZ') {
+        if (canUndo.value) undo()
+    }
     if (e.code === 'Delete') {
         remove(selected.value)
     }
@@ -185,6 +194,7 @@ localforage.getItem<string>('files').then(value => {
     } catch {
         files.value = []
     } finally {
+        nextTick(clear)
         dataInit.value = true
     }
 })
@@ -206,6 +216,16 @@ watch(files, () => {
                 <NCheckbox v-model:checked="checked" :checked-value="1" :unchecked-value="0" :indeterminate="selected.size > 0 && !checked">
                     {{ selected.size }} item{{ selected.size === 1 ? '' : 's' }}
                 </NCheckbox>
+                <NButton round :disabled="!canUndo" @click="undo">
+                    <template #icon>
+                        <NIcon><Undo /></NIcon>
+                    </template>
+                </NButton>
+                <NButton round :disabled="!canRedo" @click="redo">
+                    <template #icon>
+                        <NIcon><Redo /></NIcon>
+                    </template>
+                </NButton>
                 <n-popover trigger="click" :to="false">
                     <NSpace vertical>
                         <NColorPicker

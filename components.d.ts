@@ -15,12 +15,16 @@ declare module 'vue' {
     NIcon: typeof import('naive-ui')['NIcon']
     NPopover: typeof import('naive-ui')['NPopover']
     NSpace: typeof import('naive-ui')['NSpace']
+    Redo: typeof import('./src/components/Icons/Redo.vue')['default']
     Remove: typeof import('./src/components/Icons/Remove.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Settings: typeof import('./src/components/Icons/Settings.vue')['default']
     Sort: typeof import('./src/components/Icons/Sort.vue')['default']
     SvgList: typeof import('./src/components/SvgList/index.vue')['default']
+    Undo: typeof import('./src/components/Icons/Undo.vue')['default']
+    UndoLeftSvgrepoCom: typeof import('./src/components/Icons/UndoLeftSvgrepoCom.vue')['default']
+    UndoRightSvgrepoCom: typeof import('./src/components/Icons/UndoRightSvgrepoCom.vue')['default']
     Upload: typeof import('./src/components/Icons/Upload.vue')['default']
   }
 }
