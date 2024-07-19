@@ -177,11 +177,10 @@ useEventListener('keyup', e => {
         e.preventDefault()
         checked.value = 1
     }
-    if (e.ctrlKey && e.code === 'KeyZ') {
-        if (canUndo.value) undo()
-    }
     if (e.ctrlKey && e.shiftKey && e.code === 'KeyZ') {
         if (canRedo.value) redo()
+    } else if (e.ctrlKey && e.code === 'KeyZ') {
+        if (canUndo.value) undo()
     }
     if (e.code === 'Delete') {
         remove(selected.value)
@@ -219,12 +218,12 @@ watch(files, () => {
                 </NCheckbox>
                 <NButton round :disabled="!canUndo" @click="undo">
                     <template #icon>
-                        <NIcon><Settings /></NIcon>
+                        <NIcon><Undo /></NIcon>
                     </template>
                 </NButton>
                 <NButton round :disabled="!canRedo" @click="redo">
                     <template #icon>
-                        <NIcon><Settings /></NIcon>
+                        <NIcon><Redo /></NIcon>
                     </template>
                 </NButton>
                 <n-popover trigger="click" :to="false">
