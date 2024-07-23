@@ -251,7 +251,7 @@ async function getDropper() {
                                     '#11B8CAFF',
                                 ]"
                             />
-                            <NButton v-if="isSupported" circle size="small" @click="getDropper">
+                            <NButton v-if="isSupported" :color="color" circle size="small" @click="getDropper">
                                 <template #icon><NIcon><Dropper /></NIcon></template>
                             </NButton>
                         </div>
