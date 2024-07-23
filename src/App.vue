@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FileModel } from '@/types'
-import { useEventListener, useLocalStorage, useRefHistory } from '@vueuse/core'
+import { useEventListener, useEyeDropper, useLocalStorage, useRefHistory } from '@vueuse/core'
 import JSZip from 'jszip'
 import { areRectanglesIntersecting, getTargetName, getTemplate, setCurrentColor } from '@/utils'
 import localforage from 'localforage'
@@ -203,6 +203,13 @@ watch(files, () => {
 }, {
     deep: true
 })
+
+const { isSupported, open } = useEyeDropper()
+async function getDropper() {
+    const openRes = await open()
+    if (!openRes) return
+    color.value = openRes.sRGBHex
+}
 </script>
 
 <template>
@@ -228,21 +235,26 @@ watch(files, () => {
                 </NButton>
                 <n-popover trigger="click" :to="false">
                     <NSpace vertical>
-                        <NColorPicker
-                            v-model:value="color"
-                            :modes="['hex']"
-                            size="small"
-                            :swatches="[
-                                '#000',
-                                '#333',
-                                '#ccc',
-                                '#40ab7f',
-                                '#2080F0',
-                                '#F0A020',
-                                'rgba(208, 48, 80, 1)',
-                                '#11B8CAFF',
-                            ]"
-                        />
+                        <div class="tools-dropper">
+                            <NColorPicker
+                                v-model:value="color"
+                                :modes="['hex']"
+                                size="small"
+                                :swatches="[
+                                    '#000',
+                                    '#333',
+                                    '#ccc',
+                                    '#40ab7f',
+                                    '#2080F0',
+                                    '#F0A020',
+                                    'rgba(208, 48, 80, 1)',
+                                    '#11B8CAFF',
+                                ]"
+                            />
+                            <NButton v-if="isSupported" circle size="small" @click="getDropper">
+                                <template #icon><NIcon><Dropper /></NIcon></template>
+                            </NButton>
+                        </div>
                         <NButton block :disabled="selected.size === 0" @click="setToCurrentColor">Set to&nbsp;<span :style="{ borderBottom: `2px solid ${color}` }">currentColor</span></NButton>
                         <NCheckbox v-model:checked="currentColor" :checked-value="1" :unchecked-value="0">
                             All set to&nbsp;<span :style="{ borderBottom: `2px solid ${color}`, marginLeft: '.1em' }">currentColor</span>
@@ -320,5 +332,11 @@ watch(files, () => {
     background-color: #40ab7f30;
     z-index: 20;
     border-radius: 2px;
+}
+.tools-dropper {
+    display: flex;
+    .n-button {
+        margin-left: 10px;
+    }
 }
 </style>

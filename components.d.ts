@@ -8,6 +8,8 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Download: typeof import('./src/components/Icons/Download.vue')['default']
+    Dropper: typeof import('./src/components/Icons/Dropper.vue')['default']
+    DropperMinimalistic2SvgrepoCom: typeof import('./src/components/Icons/DropperMinimalistic2SvgrepoCom.vue')['default']
     Logo: typeof import('./src/components/Logo.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
     NCheckbox: typeof import('naive-ui')['NCheckbox']
@@ -22,9 +24,8 @@ declare module 'vue' {
     Settings: typeof import('./src/components/Icons/Settings.vue')['default']
     Sort: typeof import('./src/components/Icons/Sort.vue')['default']
     SvgList: typeof import('./src/components/SvgList/index.vue')['default']
+    TargetSvgrepoCom: typeof import('./src/components/Icons/TargetSvgrepoCom.vue')['default']
     Undo: typeof import('./src/components/Icons/Undo.vue')['default']
-    UndoLeftSvgrepoCom: typeof import('./src/components/Icons/UndoLeftSvgrepoCom.vue')['default']
-    UndoRightSvgrepoCom: typeof import('./src/components/Icons/UndoRightSvgrepoCom.vue')['default']
     Upload: typeof import('./src/components/Icons/Upload.vue')['default']
   }
 }
